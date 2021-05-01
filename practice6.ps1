@@ -9,3 +9,10 @@ function  myfunc {
 }
 
 myfunc("hogehoge")
+
+# PSCustomObject
+$a = [PSCustomObject]@{
+  "key1" = 1
+  "key2" = 2
+}
+$a.psobject.Properties.Name
