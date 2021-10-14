@@ -29,12 +29,15 @@ try {
     [int]$topRow = 17
     [int]$bottomRow = $sheet.Range("A$topRow").End([Microsoft.Office.Interop.Excel.XlDirection]::xlDown).Row
 
-    $xRange = $sheet.Range($sheet.Cells($topRow, 1), $sheet.Cells($bottomRow, 1))
-    $dataRange1 = $sheet.Range($sheet.Cells($topRow, 2), $sheet.Cells($bottomRow, 2))
-    $dataRange2 = $sheet.Range($sheet.Cells($topRow, 3), $sheet.Cells($bottomRow, 3))
+    $xRange = $sheet.Range("A$topRow", "A$bottomRow")
+    $dataRange1 = $sheet.Range("B$topRow", "B$bottomRow")
+    $dataRange2 = $sheet.Range("C$topRow", "C$bottomRow")
 
     # Delete existing charts
-    $sheet.ChartObjects().Delete()
+    $chartObjects = $sheet.ChartObjects()
+    if ($chartObjects.Count -gt 0) {
+      $chartObjects.Delete()
+    }
 
     # Create chart object
     $chart = $sheet.ChartObjects().Add(
@@ -76,22 +79,10 @@ try {
     $chart.ChartGroups([Microsoft.Office.Interop.Excel.XlAxisGroup]::xlPrimary).Overlap = 0
   }
 
-  $sheet = $null
-  $chart = $null
-  $xRange = $null
-  $dataRange1 = $null
-  $dataRange2 = $null
-  $dataSeries1 = $null
-  $dataSeries2 = $null
-
   $book.Save()
-} catch [System.Runtime.InteropServices.COMException] {
-  Write-Error "The target file does'nt exit."
 } finally {
   $excel.Quit()
-
-  $excel = $null
-  $book = $null
 }
 
+Get-Variable | Where-Object Value -is [__ComObject] | Clear-Variable
 [GC]::Collect()
