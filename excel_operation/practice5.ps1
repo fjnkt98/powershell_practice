@@ -16,6 +16,7 @@ try {
   $book = $excel.Workbooks.Open($workingDirectory + "\" + $fileName)
 
   $source_sheet = $book.Sheets("data")
+  $summary_sheet = $book.Sheets("summary")
   [int]$length = 3
   for ($i = 0; $i -lt 3; $i++) {
     $array = [System.Collections.Generic.List[int]]::new()
@@ -24,9 +25,12 @@ try {
       $array.Add($excel.WorksheetFunction.Max($range))
     }
 
-    foreach($item in $array) {
-      Write-Host $item
+    # $summary_sheet.Range($summary_sheet.Cells($i + 1, 1), $summary_sheet.Cells($i + 1, $count)) = $excel.WorksheetFunction.Transpose($array)
+    $input_data = New-Object System.Int32[] $array.Count
+    for ($j = 0; $j -lt $array.Count; $j++) {
+      $input_data[$j] = $array[$j]
     }
+    $summary_sheet.Range($summary_sheet.Cells($i + 1, 1), $summary_sheet.Cells($i + 1, $array.Count)).Value2 = $input_data
   }
 
   $book.Save()
